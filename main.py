@@ -2,10 +2,23 @@
 
 # Imports
 import math
-
+import abc
 # Start
-print("It can work first try")
 
 
-def adding(a, b):
-    return a+b
+
+def formatting(a, b):
+    return b.format(a)
+
+
+class superClass():
+    def execute(a, b):
+        pass
+
+class adding(superClass):
+    def execute(a, b):
+        return a+b
+
+class divide(superClass):
+    def execute(a, b):
+        return a/b
