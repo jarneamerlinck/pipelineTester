@@ -11,7 +11,7 @@ class Maintester(unittest.TestCase):
         pass
     def testSuperClass(self):
         obj = superClass()
-        self.assertEqual(obj.execute(12, 4), null)
+        self.assertEqual(obj.execute(12, 4), None)
     
     def testAdding(self):
         obj = adding()
