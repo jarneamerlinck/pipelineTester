@@ -11,11 +11,14 @@ class Maintester(unittest.TestCase):
         pass
     def testSuperClass(self):
         obj = superClass()
-        self.assertEqual(obj.execute(12, 4), 3)
+        self.assertEqual(obj.execute(12, 4), null)
     
     def testAdding(self):
         obj = adding()
         self.assertEqual(obj.execute(12, 4), 16)
+    def testingDivide(self):
+        obj = divide()
+        self.assertEqual(obj.execute(12, 4), 3)
     def testFormatting(self):
         self.assertEqual(formatting("a", "this is {} in b"), "this is a in b")
     

@@ -12,13 +12,13 @@ def formatting(a, b):
 
 
 class superClass():
-    def execute(a, b):
+    def execute(self, a, b):
         pass
 
 class adding(superClass):
-    def execute(a, b):
+    def execute(self, a, b):
         return a+b
 
 class divide(superClass):
-    def execute(a, b):
+    def execute(self, a, b):
         return a/b
