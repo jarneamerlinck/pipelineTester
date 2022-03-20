@@ -15,4 +15,4 @@ pipelines:
           script:
             - if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
             - pip install bar
-            - python3 -m unittest discover tests
+            - python -m unittest discover tests
