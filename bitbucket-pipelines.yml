@@ -1,9 +1,47 @@
+# This is a sample build configuration for Python.
+# Check our guides at https://confluence.atlassian.com/x/x4UWN for more examples.
+# Only use spaces to indent your .yml configuration.
+
+# Specify a docker image from Docker Hub as your build environment.
+# All of your pipeline scripts will be executed within this docker image.
+
 image: python:3.7
 
+# You might want to create and access a service (like a database) as part
+# of your Pipeline workflow. You can do so by defining it as a service here.
+
+definitions: 
+    services: 
+
+        # Your service can be named anything - what runs is determined
+        # by the Docker Hub image you specify.
+
+        mongo: # Names the service (that we reference below)
+            image: mongo
+
+# All of your Pipelines will be defined in the `pipelines` section.
+# You can have any number of Pipelines, but they must all have unique
+# names. The default Pipeline is simply named `default`.
+
 pipelines:
-  default:
-    - step:
-      name: Testing
-      script:
-        - pip install matplotlib
-        - python -m unittest discover tests/
+    default:
+
+        # Each Pipeline consists of one or more steps which each execute
+        # sequentially in separate docker containers.
+        #
+        # name: Optional name for this step
+        # script: The commands you wish to execute in this step, sequentially.
+
+        # One common use case of Pipelines is running Unit Tests on your codebase.
+        # In Python, this is commonly done with Unittest.
+
+        - step:
+                name: Testing
+                caches: # Marks what will be in cache so it is not downloaded again.
+                    - pip
+                script: # Modify the commands below to build your repository.
+                    - pip install pymongo # Install all dependencies.
+                    - python -m unittest discover tests/ # Executes the tests
+                services: 
+                    - mongo 
+
