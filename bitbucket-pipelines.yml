@@ -5,5 +5,5 @@ pipelines:
     - step:
       name: Testing
       script:
-	- pip install matplotlib
-	- python -m unittest discover tests/
+        - pip install matplotlib
+        - python -m unittest discover tests/
