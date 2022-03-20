@@ -14,5 +14,5 @@ pipelines:
             - pip
           script:
             - if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-            - pipi install unittests
+            - pip install unittests
             - python3 -m unittest discover tests
