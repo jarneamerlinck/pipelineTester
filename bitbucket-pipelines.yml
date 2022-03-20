@@ -1,18 +1,9 @@
-#  Template python-build
-
-#  This template allows you to validate your python code.
-#  The workflow allows running tests and code linting on the default branch.
-
-image: python:3.8
+image: python:3.7
 
 pipelines:
   default:
-    - parallel:
-      - step:
-          name: Tests
-          caches:
-            - pip
-          script:
-            - if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-            - pip install bar
-            - python -m unittest discover tests
+    - step:
+      name: Testing
+      script:
+	- pip install matplotlib
+	- python -m unittest discover tests/
