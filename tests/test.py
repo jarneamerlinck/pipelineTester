@@ -6,7 +6,7 @@ import unittest
 from main import adding
 # Start
 
-class Maintester(unittest.Testcase):
+class Maintester(unittest.TestCase):
     def setUp(self):
         pass
     def testAdding(self):
