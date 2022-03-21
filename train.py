@@ -8,5 +8,5 @@ import numpy as np
 from main import *
 # Start
 
-
+makeImage()
 print(formatting("retesting", "this is space for {}"))

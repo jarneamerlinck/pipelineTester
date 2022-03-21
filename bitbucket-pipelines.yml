@@ -40,7 +40,9 @@ pipelines:
                 caches: # Marks what will be in cache so it is not downloaded again.
                     - pip
                 script: # Modify the commands below to build your repository.
-                    - pip install pymongo # Install all dependencies.
+                    - pip install numpy # Install all dependencies.
+                    - pip install pandas
+                    - pip install matplotlib
                     - python -m unittest discover tests/ # Executes the tests
                 services: 
                     - mongo 
