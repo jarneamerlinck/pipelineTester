@@ -43,6 +43,7 @@ pipelines:
                     - pip install numpy # Install all dependencies.
                     - pip install pandas
                     - pip install matplotlib
+                    - pip install scikit-learn
                     - python -m unittest discover tests/ # Executes the tests
                 services: 
                     - mongo 
