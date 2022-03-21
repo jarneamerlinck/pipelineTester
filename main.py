@@ -3,11 +3,12 @@
 # Imports
 import math
 import abc
+from tokenize import String
 # Start
 
 
 
-def formatting(a, b):
+def formatting(a:String, b:String):
     return b.format(a)
 
 
