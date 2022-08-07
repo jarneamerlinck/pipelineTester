@@ -15,10 +15,9 @@ jobs:
       - name: testing env
         shell: bash
         run : |
-          source /opt/conda/bin/activate vilbert-mt && conda env list
-
+          export PATH=/opt/conda/bin:$PATH
           echo "Loading enviroment env for feature"
-          /opt/conda/bin/conda activate /opt/conda/envs/ml_bitbucket_demo
+          conda activate /opt/conda/envs/ml_bitbucket_demo
           echo $CONDA_DEFAULT_ENV
           
       - name: tests
