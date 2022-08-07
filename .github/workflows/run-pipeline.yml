@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: testing env
-      - shell: bash
+        shell: bash
         run : |
           echo "Loading enviroment env for feature"
           source /etc/profile.d/conda.sh
