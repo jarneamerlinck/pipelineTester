@@ -15,7 +15,7 @@ jobs:
       - name: testing env
         run : |
           echo "Loading enviroment env for feature"
-          conda activate /opt/conda/envs/ml_bitbucket_demo
+          /opt/conda/bin/conda activate /opt/conda/envs/ml_bitbucket_demo
           echo $CONDA_DEFAULT_ENV
           
       - name: tests
