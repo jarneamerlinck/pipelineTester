@@ -4,7 +4,7 @@ on: [ pull_request, push]
 
 
 jobs:
-  fase-1:
+  mlops:
 #    runs-on: [self-hosted, linux]
     runs-on: ubuntu-22.04
     container: eragon1442/conda:ml_bitbucket_1.0
@@ -12,111 +12,86 @@ jobs:
       TO_PRINT: hey
     steps:
       - uses: actions/checkout@v2
-      - name: Run tests
+      - name: testing env
         run : |
-          git fetch --tags
-          git lfs pull
-          make
+          echo "Loading enviroment env for feature"
+          conda activate /opt/conda/envs/ml_bitbucket_demo
+          echo $CONDA_DEFAULT_ENV
           
-      - name: test cnws runs without error
+      - name: tests
         run : |
-          testfiles/test.sh
+          echo "Running tests"
+          python -m unittest discover tests/
 
-      - name: CNWS-processing repo for python tests  
-        shell: bash
+      - name: Training
         run : |
-          source /etc/profile.d/conda.sh
-          conda activate cn_ws
-          pytest testfiles
+          echo "Running preprocess"
+          python preprocessing.py
+          echo "Running train pipeline"
+          python train.py
 
-  build-conda:
-    runs-on: [self-hosted, linux]
-    container: registry.fluves.net/drone/cn_ws/conda
-    env:
-      DRONE_BUILD_NUMBER: ${{ github.run_id }}
-      DRONE_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
-      CONDA_BUILD: /.build/conda_build
-      GIT_DESCRIBE_TAG: ${{ github.run_id }} # should be git describe
-    steps:
-      - uses: actions/checkout@v2
-      - name: build conda package
+#   build-conda:
+#     runs-on: [self-hosted, linux]
+#     container: registry.fluves.net/drone/cn_ws/conda
+#     env:
+#       DRONE_BUILD_NUMBER: ${{ github.run_id }}
+#       DRONE_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+#       CONDA_BUILD: /.build/conda_build
+#       GIT_DESCRIBE_TAG: ${{ github.run_id }} # should be git describe
+#     steps:
+#       - uses: actions/checkout@v2
+#       - name: build conda package
         
-        run : |
-          git fetch --tags 
-          mkdir -p $CONDA_BUILD
-          conda build . --output-folder $CONDA_BUILD
-          conda index $CONDA_BUILD
-          ls -R $CONDA_BUILD
-      - uses: actions/upload-artifact@master
-        with:
-          name: conda-output
-          path: /.build/conda_build
-  publish-conda:
-#    if: github.event_name != 'pull_request'
-    needs: build-conda
-    runs-on: [self-hosted, linux]
+#         run : |
+#           git fetch --tags 
+#           mkdir -p $CONDA_BUILD
+#           conda build . --output-folder $CONDA_BUILD
+#           conda index $CONDA_BUILD
+#           ls -R $CONDA_BUILD
+#       - uses: actions/upload-artifact@master
+#         with:
+#           name: conda-output
+#           path: /.build/conda_build
+#   publish-conda:
+# #    if: github.event_name != 'pull_request'
+#     needs: build-conda
+#     runs-on: [self-hosted, linux]
    
-    env:
-      CONDA_BUILD: .build/conda_build
-      PLUGIN_access_key: conda
-      PLUGIN_secret_key: ${{ secrets.conda_secret_key }}
-      PLUGIN_bucket: conda
-      PLUGIN_source: $CONDA_BUILD/**/*.bz2
-      PLUGIN_target: /
-      PLUGIN_path_style: true
-      PLUGIN_endpoint: https://minio.fluves.net
-      PLUGIN_strip_prefix: $CONDA_BUILD/
-      PLUGIN_entrypoint: /bin/drone-s3
-      DOCKER_CONTAINER_NAME: github-actions-runner
+#     env:
+#       CONDA_BUILD: .build/conda_build
+#       PLUGIN_access_key: conda
+#       PLUGIN_secret_key: ${{ secrets.conda_secret_key }}
+#       PLUGIN_bucket: conda
+#       PLUGIN_source: $CONDA_BUILD/**/*.bz2
+#       PLUGIN_target: /
+#       PLUGIN_path_style: true
+#       PLUGIN_endpoint: https://minio.fluves.net
+#       PLUGIN_strip_prefix: $CONDA_BUILD/
+#       PLUGIN_entrypoint: /bin/drone-s3
+#       DOCKER_CONTAINER_NAME: github-actions-runner
 
-    steps:
-      - uses: actions/download-artifact@master
-        with:
-          name: conda-output
-          path: $CONDA_BUILD
-      - name: upload conda package to S3
-        run: |
-          /usr/bin/docker run --name $DOCKER_CONTAINER_NAME plugins/s3:1.1.0 -v $CONDA_BUILD:$CONDA_BUILD \
-          -e access_key=$PLUGIN_access_key \
-          -e secret_key=$PLUGIN_secret_key \
-          -e bucket=$PLUGIN_bucket \
-          -e source=$CONDA_BUILD/**/*.bz2 \
-          -e target=$PLUGIN_target \
-          -e path_style=$PLUGIN_path_style \
-          -e endpoint=$PLUGIN_endpoint \
-          -e strip_prefix=$PLUGIN_strip_prefix \
-          -e CONDA_BUILD=$CONDA_BUILD \
-          --entrypoint $PLUGIN_entrypoint
+#     steps:
+#       - uses: actions/download-artifact@master
+#         with:
+#           name: conda-output
+#           path: $CONDA_BUILD
+#       - name: upload conda package to S3
+#         run: |
+#           /usr/bin/docker run --name $DOCKER_CONTAINER_NAME plugins/s3:1.1.0 -v $CONDA_BUILD:$CONDA_BUILD \
+#           -e access_key=$PLUGIN_access_key \
+#           -e secret_key=$PLUGIN_secret_key \
+#           -e bucket=$PLUGIN_bucket \
+#           -e source=$CONDA_BUILD/**/*.bz2 \
+#           -e target=$PLUGIN_target \
+#           -e path_style=$PLUGIN_path_style \
+#           -e endpoint=$PLUGIN_endpoint \
+#           -e strip_prefix=$PLUGIN_strip_prefix \
+#           -e CONDA_BUILD=$CONDA_BUILD \
+#           --entrypoint $PLUGIN_entrypoint
 
-      - name: cleaning up
-        if: always()
-        run: |
-          sleep 10 ;/usr/bin/docker rm github-actions-runner
-          rm -r $CONDA_BUILD || true
+#       - name: cleaning up
+#         if: always()
+#         run: |
+#           sleep 10 ;/usr/bin/docker rm github-actions-runner
+#           rm -r $CONDA_BUILD || true
 
-  # build-debian:
-  #   runs-on: [self-hosted, linux]
-  #   container: registry.fluves.net/drone/cn_ws/debian11-build
-  #   env:
-  #     GPG_KEY: ${{secrets.gpg-key}} 
-  #     DEBFULLNAME: "Fluves Drone CI"
-  #     DEBEMAIL: donotreply@fluves.net
-  #     plugin_hosts: ijzer
-  #     plugin_user: docs
-  #     plugin_key: ${{secrets.ssh-key}} 
-      
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - name: build debian package
-  #       run : |
-  #         git fetch --tags
-  #         gbp dch --snapshot --ignore-branch --snapshot-number=$DRONE_BUILD_NUMBER
-  #         debuild -b
-  #         mkdir package
-  #         mv ../cn-ws*amd64* package
-  #     - name: rsync-apt
-  #       run: |
-  #         echo "WIP"
-
-      
-  
