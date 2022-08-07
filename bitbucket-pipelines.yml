@@ -1,50 +1,49 @@
-# This is a sample build configuration for Python.
-# Check our guides at https://confluence.atlassian.com/x/x4UWN for more examples.
-# Only use spaces to indent your .yml configuration.
+#image: python:3.9.7
+image: eragon1442/conda:ml_bitbucket_1.0
 
-# Specify a docker image from Docker Hub as your build environment.
-# All of your pipeline scripts will be executed within this docker image.
-
-image: python:3.7
-
-# You might want to create and access a service (like a database) as part
-# of your Pipeline workflow. You can do so by defining it as a service here.
-
-definitions: 
-    services: 
-
-        # Your service can be named anything - what runs is determined
-        # by the Docker Hub image you specify.
-
-        mongo: # Names the service (that we reference below)
-            image: mongo
-
-# All of your Pipelines will be defined in the `pipelines` section.
-# You can have any number of Pipelines, but they must all have unique
-# names. The default Pipeline is simply named `default`.
 
 pipelines:
-    default:
-
-        # Each Pipeline consists of one or more steps which each execute
-        # sequentially in separate docker containers.
-        #
-        # name: Optional name for this step
-        # script: The commands you wish to execute in this step, sequentially.
-
-        # One common use case of Pipelines is running Unit Tests on your codebase.
-        # In Python, this is commonly done with Unittest.
-
+    pull-requests:
+        main:
         - step:
-                name: Testing
-                caches: # Marks what will be in cache so it is not downloaded again.
-                    - pip
-                script: # Modify the commands below to build your repository.
-                    - pip install numpy # Install all dependencies.
-                    - pip install pandas
-                    - pip install matplotlib
-                    - pip install scikit-learn
-                    - python -m unittest discover tests/ # Executes the tests
-                services: 
-                    - mongo 
-
+                name: testing env
+                script:
+                    - echo "Loading enviroment env for feature"
+                    - conda activate /opt/conda/envs/ml_bitbucket_demo
+                    - echo $CONDA_DEFAULT_ENV
+        - step:
+                name: tests
+                script:
+                    - conda activate /opt/conda/envs/ml_bitbucket_demo
+                    - echo "Running tests"
+                    - python -m unittest discover tests/
+        - step:
+                name: training
+                script:
+                    - conda activate /opt/conda/envs/ml_bitbucket_demopus
+                    - echo "Running preprocess      "
+                    - python preprocessing.py
+                    - echo "Running train pipeline"
+                    - python train.py
+    branches:
+        main:
+            - step:
+                    name: testing env
+                    script:
+                        - echo "Loading enviroment env"
+                        - conda activate /opt/conda/envs/ml_bitbucket_demo
+                        - echo $CONDA_DEFAULT_ENV
+            - step:
+                    name: tests
+                    script:
+                        - conda activate /opt/conda/envs/ml_bitbucket_demo
+                        - echo "Running tests"
+                        - python -m unittest discover tests/
+            - step:
+                    name: training
+                    script:
+                        - conda activate /opt/conda/envs/ml_bitbucket_demopus
+                        - echo "Running preprocess pipeline"
+                        - python preprocessing.py
+                        - echo "Running train pipeline"
+                        - python train.py

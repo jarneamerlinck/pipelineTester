@@ -1,13 +1,13 @@
-name: mlops-course
+name: ml_bitbucket_demo
 
 channels:
   - defaults
   - conda-forge
 dependencies:
-  - numpy==1.21.5
+  - numpy==1.22.3
   - pandas==1.4.1
   - scikit-learn==1.0.2
+  - matplotlib==3.5.1
   - pip
   - pip:
     - mlflow
-    - matplotlib
