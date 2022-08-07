@@ -16,7 +16,6 @@ jobs:
         shell: bash
         run : |
           echo "Loading enviroment env for feature"
-          source /etc/profile.d/conda.sh
           /opt/conda/bin/conda activate /opt/conda/envs/ml_bitbucket_demo
           echo $CONDA_DEFAULT_ENV
           
